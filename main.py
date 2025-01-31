@@ -1,18 +1,11 @@
 import pydantic
 from fastapi import FastAPI, Request
+from api.users_api.users import user_router
+from api.test_api.tests import test_router
+from database import Base, engine
 app = FastAPI(docs_url='/')
-
-
-@app.get('/info')
-async def info():
-    return "Hello"
-
-@app.post('/add')
-async def add(name: str, age: int):
-    print(name, age)
-    return "Отправлено"
-
-class User(pydantic.BaseModel):
-    name: str
-    age: int
-
+# делаем миграции
+Base.metadata.create_all(bind=engine)
+# регистрируем компонент (роутер)
+app.include_router(user_router)
+app.include_router(test_router)
